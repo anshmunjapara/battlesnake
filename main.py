@@ -42,7 +42,7 @@ def move(game_state: typing.Dict) -> typing.Dict:
     nextMove = {"move": "up"}
     print(f"MOVE {game_state['turn']}: {nextMove}")
 
-    return {"move": nextMove}
+    return nextMove
 
 
 app = Flask("Battlesnake")
