@@ -1,6 +1,7 @@
 import random
 import typing
 import logging
+import git
 from flask import Flask
 from flask import request
 
@@ -51,6 +52,14 @@ def run_server(handlers: typing.Dict):
     @app.get("/")
     def on_info():
         return handlers["info"]()
+
+    @app.post("/git-update")
+    def git_update():
+        repo = git.Repo("/home/anshmunjapara/battlesnake")
+        origin = repo.remotes.origin
+        repo.create_head("main", origin.refs.main).set_tracking_branch(origin.refs.main).checkout()
+        origin.pull()
+        return "", 200
 
     @app.post("/start")
     def on_start():
