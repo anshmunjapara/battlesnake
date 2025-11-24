@@ -31,6 +31,10 @@ def end(game_state: typing.Dict):
     print("GAME OVER\n")
 
 
+def returnMove(nextMove):
+    return {"move": nextMove}
+
+
 def checkWallCollision(possibleMoves, myHead, boardWidth, boardHeight):
     if myHead["x"] == 0:  # Head is at the left edge, don't move left
         possibleMoves["left"] = "false"
@@ -77,7 +81,7 @@ def move(gameState: typing.Dict) -> typing.Dict:
     nextMove = random.choice(safeMoves)
     print(f"MOVE {gameState['turn']}: {nextMove}")
 
-    return nextMove
+    return returnMove(nextMove)
 
 
 app = Flask("Battlesnake")
