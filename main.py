@@ -46,6 +46,24 @@ def checkWallCollision(possibleMoves, myHead, boardWidth, boardHeight):
         possibleMoves["up"] = "false"
 
 
+def checkBodyCollisions(possibleMoves, allBodiesCoords, myHead):
+    directions = {
+        "up": (0, 1),
+        "down": (0, -1),
+        "left": (-1, 0),
+        "right": (1, 0)
+    }
+
+    for direction, (dx, dy) in directions.items():
+        newHead = (myHead["x"] + dx, myHead["y"] + dy)
+
+        if newHead in allBodiesCoords:
+            possibleMoves[direction] = "false"
+
+    print("after checking self and enemy collision")
+    print(possibleMoves)
+
+
 def move(gameState: typing.Dict) -> typing.Dict:
     boardGrid = []
     for i in range(0, 11):
@@ -55,6 +73,12 @@ def move(gameState: typing.Dict) -> typing.Dict:
 
     myHead = gameState["you"]["body"][0]
     myNeck = gameState["you"]["body"][1]
+    myBody = gameState["you"]["body"]
+    myLength = gameState["you"]["length"]
+    opponents = gameState["board"]["snakes"]
+    enemyCoords = set()
+    enemyHeads = []
+    enemyLength = {}
 
     boardWidth = gameState['board']['width']
     boardHeight = gameState['board']['height']
@@ -71,7 +95,17 @@ def move(gameState: typing.Dict) -> typing.Dict:
     elif myNeck["y"] > myHead["y"]:  # Neck is above head, don't move up
         possibleMoves["up"] = "false"
 
+    for snake in opponents:
+        enemyHead = (snake["head"]["x"], snake["head"]["y"])
+        for segment in snake["body"][:-1]:
+            enemyCoords.add((segment["x"], segment["y"]))
+        if enemyHead != (myHead['x'], myHead['y']):
+            enemyHeads.append(enemyHead)
+            enemyLength[enemyHead] = snake["length"]
+
     checkWallCollision(possibleMoves, myHead, boardWidth, boardHeight)
+    checkBodyCollisions(possibleMoves, enemyCoords, myHead)
+
     # return a move
     safeMoves = []
     for move, status in possibleMoves.items():
