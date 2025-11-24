@@ -31,16 +31,51 @@ def end(game_state: typing.Dict):
     print("GAME OVER\n")
 
 
-def move(game_state: typing.Dict) -> typing.Dict:
+def checkWallCollision(possibleMoves, myHead, boardWidth, boardHeight):
+    if myHead["x"] == 0:  # Head is at the left edge, don't move left
+        possibleMoves["left"] = "false"
+    if myHead["x"] == boardWidth - 1:  # Head is at the right edge, don't move right
+        possibleMoves["right"] = "false"
+    if myHead["y"] == 0:  # Head is at the bottom edge, don't move down
+        possibleMoves["down"] = "false"
+    if myHead["y"] == boardHeight - 1:  # Head is at the top edge, don't move up
+        possibleMoves["up"] = "false"
+
+
+def move(gameState: typing.Dict) -> typing.Dict:
     boardGrid = []
     for i in range(0, 11):
         boardGrid.append([0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0])
 
-    safeMoves = {"up": "true", "down": "true", "left": "true", "right": "true"}
+    possibleMoves = {"up": "true", "down": "true", "left": "true", "right": "true"}
 
+    myHead = gameState["you"]["body"][0]
+    myNeck = gameState["you"]["body"][1]
+
+    boardWidth = gameState['board']['width']
+    boardHeight = gameState['board']['height']
+
+    if myNeck["x"] < myHead["x"]:  # Neck is left of head, don't move left
+        possibleMoves["left"] = "false"
+
+    elif myNeck["x"] > myHead["x"]:  # Neck is right of head, don't move right
+        possibleMoves["right"] = "false"
+
+    elif myNeck["y"] < myHead["y"]:  # Neck is below head, don't move down
+        possibleMoves["down"] = "false"
+
+    elif myNeck["y"] > myHead["y"]:  # Neck is above head, don't move up
+        possibleMoves["up"] = "false"
+
+    checkWallCollision(possibleMoves, myHead, boardWidth, boardHeight)
     # return a move
-    nextMove = {"move": "up"}
-    print(f"MOVE {game_state['turn']}: {nextMove}")
+    safeMoves = []
+    for move, status in possibleMoves.items():
+        if status == "true":
+            safeMoves.append(move)
+
+    nextMove = random.choice(safeMoves)
+    print(f"MOVE {gameState['turn']}: {nextMove}")
 
     return nextMove
 
