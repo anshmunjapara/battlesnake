@@ -1,6 +1,8 @@
 import random
 import typing
 import logging
+from collections import deque
+
 import git
 from flask import Flask
 from flask import request
@@ -93,6 +95,126 @@ def checkOneStepFutureCollision(possibleMoves, enemyHeads, myHead, enemyLength, 
     print(possibleMoves)
 
 
+def checkEnclosedSpace(possibleMoves, myHead, enemyHeads, enemyCoords, myLength):
+    futureEnemyHeads = set()
+
+    directions = {
+        "up": (0, 1),
+        "down": (0, -1),
+        "left": (-1, 0),
+        "right": (1, 0)
+    }
+
+    for head in enemyHeads:
+        for direction, (dx, dy) in directions.items():
+            newEnemyHead = (head["x"] + dx, head["y"] + dy)
+            futureEnemyHeads.add(newEnemyHead)
+
+    if possibleMoves["up"] != "false":
+        myNewHead = (myHead["x"], myHead["y"] + 1)
+        visited = set()
+        queue = deque()
+        emptyTiles = 0
+        queue.append(myNewHead)
+
+        while queue:
+            tile = queue.popleft()
+            if tile in visited:
+                continue
+
+            for dir, (dx, dy) in directions.items():
+                newNeighbor = (tile["x"] + dx, tile["y"] + dy)
+                if 11 > newNeighbor[0] >= 0 and 11 > newNeighbor[1] >= 0:
+                    if newNeighbor not in enemyCoords and newNeighbor not in futureEnemyHeads:
+                        queue.append(newNeighbor)
+                        visited.add(newNeighbor)
+                        emptyTiles += 1
+
+            if emptyTiles >= myLength * 2:
+                break
+
+        if emptyTiles < myLength * 2:
+            possibleMoves["up"] = "maybe"
+
+    if possibleMoves["down"] != "false":
+        myNewHead = (myHead["x"], myHead["y"] - 1)
+        visited = set()
+        queue = deque()
+        emptyTiles = 0
+        queue.append(myNewHead)
+
+        while queue:
+            tile = queue.popleft()
+            if tile in visited:
+                continue
+
+            for dir, (dx, dy) in directions.items():
+                newNeighbor = (tile["x"] + dx, tile["y"] + dy)
+                if 11 > newNeighbor[0] >= 0 and 11 > newNeighbor[1] >= 0:
+                    if newNeighbor not in enemyCoords and newNeighbor not in futureEnemyHeads:
+                        queue.append(newNeighbor)
+                        visited.add(newNeighbor)
+                        emptyTiles += 1
+
+            if emptyTiles >= myLength * 2:
+                break
+
+        if emptyTiles < myLength * 2:
+            possibleMoves["down"] = "maybe"
+
+    if possibleMoves["left"] != "false":
+        myNewHead = (myHead["x"] - 1, myHead["y"])
+        visited = set()
+        queue = deque()
+        emptyTiles = 0
+        queue.append(myNewHead)
+
+        while queue:
+            tile = queue.popleft()
+            if tile in visited:
+                continue
+
+            for dir, (dx, dy) in directions.items():
+                newNeighbor = (tile["x"] + dx, tile["y"] + dy)
+                if 11 > newNeighbor[0] >= 0 and 11 > newNeighbor[1] >= 0:
+                    if newNeighbor not in enemyCoords and newNeighbor not in futureEnemyHeads:
+                        queue.append(newNeighbor)
+                        visited.add(newNeighbor)
+                        emptyTiles += 1
+
+            if emptyTiles >= myLength * 2:
+                break
+
+        if emptyTiles < myLength * 2:
+            possibleMoves["left"] = "maybe"
+
+    if possibleMoves["right"] != "false":
+        myNewHead = (myHead["x"] + 1, myHead["y"])
+        visited = set()
+        queue = deque()
+        emptyTiles = 0
+        queue.append(myNewHead)
+
+        while queue:
+            tile = queue.popleft()
+            if tile in visited:
+                continue
+
+            for dir, (dx, dy) in directions.items():
+                newNeighbor = (tile["x"] + dx, tile["y"] + dy)
+                if 11 > newNeighbor[0] >= 0 and 11 > newNeighbor[1] >= 0:
+                    if newNeighbor not in enemyCoords and newNeighbor not in futureEnemyHeads:
+                        queue.append(newNeighbor)
+                        visited.add(newNeighbor)
+                        emptyTiles += 1
+
+            if emptyTiles >= myLength * 2:
+                break
+
+        if emptyTiles < myLength * 2:
+            possibleMoves["right"] = "maybe"
+
+
 def move(gameState: typing.Dict) -> typing.Dict:
     boardGrid = []
     for i in range(0, 11):
@@ -135,6 +257,7 @@ def move(gameState: typing.Dict) -> typing.Dict:
     checkWallCollision(possibleMoves, myHead, boardWidth, boardHeight)
     checkBodyCollisions(possibleMoves, enemyCoords, myHead)
     checkOneStepFutureCollision(possibleMoves, enemyHeads, myHead, enemyLength, myLength)
+    checkEnclosedSpace(possibleMoves,myHead,enemyHeads,enemyCoords,myLength)
 
     safeMoves = []
     maybeSafeMoves = []
