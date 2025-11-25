@@ -135,7 +135,7 @@ def move(gameState: typing.Dict) -> typing.Dict:
     checkWallCollision(possibleMoves, myHead, boardWidth, boardHeight)
     checkBodyCollisions(possibleMoves, enemyCoords, myHead)
     checkOneStepFutureCollision(possibleMoves, enemyHeads, myHead, enemyLength, myLength)
-    # return a move
+
     safeMoves = []
     maybeSafeMoves = []
     killerMoves = []
