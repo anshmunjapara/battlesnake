@@ -107,7 +107,7 @@ def checkEnclosedSpace(possibleMoves, myHead, enemyHeads, enemyCoords, myLength)
 
     for head in enemyHeads:
         for direction, (dx, dy) in directions.items():
-            newEnemyHead = (head["x"] + dx, head["y"] + dy)
+            newEnemyHead = (head[0] + dx, head[1] + dy)
             futureEnemyHeads.add(newEnemyHead)
 
     if possibleMoves["up"] != "false":
