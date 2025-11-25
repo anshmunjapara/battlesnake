@@ -123,7 +123,7 @@ def checkEnclosedSpace(possibleMoves, myHead, enemyHeads, enemyCoords, myLength)
                 continue
 
             for dir, (dx, dy) in directions.items():
-                newNeighbor = (tile["x"] + dx, tile["y"] + dy)
+                newNeighbor = (tile[0] + dx, tile[1] + dy)
                 if 11 > newNeighbor[0] >= 0 and 11 > newNeighbor[1] >= 0:
                     if newNeighbor not in enemyCoords and newNeighbor not in futureEnemyHeads:
                         queue.append(newNeighbor)
@@ -149,7 +149,7 @@ def checkEnclosedSpace(possibleMoves, myHead, enemyHeads, enemyCoords, myLength)
                 continue
 
             for dir, (dx, dy) in directions.items():
-                newNeighbor = (tile["x"] + dx, tile["y"] + dy)
+                newNeighbor = (tile[0] + dx, tile[1] + dy)
                 if 11 > newNeighbor[0] >= 0 and 11 > newNeighbor[1] >= 0:
                     if newNeighbor not in enemyCoords and newNeighbor not in futureEnemyHeads:
                         queue.append(newNeighbor)
@@ -175,7 +175,7 @@ def checkEnclosedSpace(possibleMoves, myHead, enemyHeads, enemyCoords, myLength)
                 continue
 
             for dir, (dx, dy) in directions.items():
-                newNeighbor = (tile["x"] + dx, tile["y"] + dy)
+                newNeighbor = (tile[0] + dx, tile[1] + dy)
                 if 11 > newNeighbor[0] >= 0 and 11 > newNeighbor[1] >= 0:
                     if newNeighbor not in enemyCoords and newNeighbor not in futureEnemyHeads:
                         queue.append(newNeighbor)
@@ -201,7 +201,7 @@ def checkEnclosedSpace(possibleMoves, myHead, enemyHeads, enemyCoords, myLength)
                 continue
 
             for dir, (dx, dy) in directions.items():
-                newNeighbor = (tile["x"] + dx, tile["y"] + dy)
+                newNeighbor = (tile[0] + dx, tile[1] + dy)
                 if 11 > newNeighbor[0] >= 0 and 11 > newNeighbor[1] >= 0:
                     if newNeighbor not in enemyCoords and newNeighbor not in futureEnemyHeads:
                         queue.append(newNeighbor)
