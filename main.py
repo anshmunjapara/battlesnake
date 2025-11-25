@@ -64,6 +64,33 @@ def checkBodyCollisions(possibleMoves, allBodiesCoords, myHead):
     print(possibleMoves)
 
 
+def checkFutureCollision(possibleMoves, enemyHeads, myHead, enemyLength, myLength):
+    directions = {
+        "up": (0, 1),
+        "down": (0, -1),
+        "left": (-1, 0),
+        "right": (1, 0)
+    }
+
+    for head in enemyHeads:
+        dangerous_positions = [
+            (head[0] + 1, head[1]),
+            (head[0] - 1, head[1]),
+            (head[0], head[1] + 1),
+            (head[0], head[1] - 1),
+        ]
+
+        for directions, (dx, dy) in directions.items():
+            if possibleMoves[directions] == "true":
+                if (myHead["x"] + dx, myHead["y"] + dy) in dangerous_positions and myLength > enemyLength[head]:
+                    possibleMoves[directions] = "kill"
+                else:
+                    possibleMoves[directions] = "maybe"
+
+    print("after checking future 1 step collision")
+    print(possibleMoves)
+
+
 def move(gameState: typing.Dict) -> typing.Dict:
     boardGrid = []
     for i in range(0, 11):
@@ -105,14 +132,27 @@ def move(gameState: typing.Dict) -> typing.Dict:
 
     checkWallCollision(possibleMoves, myHead, boardWidth, boardHeight)
     checkBodyCollisions(possibleMoves, enemyCoords, myHead)
-
+    checkFutureCollision(possibleMoves, enemyHeads, myHead, enemyLength, myLength)
     # return a move
     safeMoves = []
+    maybeSafeMoves = []
+    killerMoves = []
+
     for move, status in possibleMoves.items():
         if status == "true":
             safeMoves.append(move)
+        elif status == "maybe":
+            maybeSafeMoves.append(move)
+        elif status == "kill":
+            killerMoves.append(move)
+    nextMove = None
+    if killerMoves:
+        nextMove = random.choice(killerMoves)
+    elif safeMoves:
+        nextMove = random.choice(safeMoves)
+    elif maybeSafeMoves:
+        nextMove = random.choice(maybeSafeMoves)
 
-    nextMove = random.choice(safeMoves)
     print(f"MOVE {gameState['turn']}: {nextMove}")
 
     return returnMove(nextMove)
