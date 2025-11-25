@@ -82,11 +82,13 @@ def checkFutureCollision(possibleMoves, enemyHeads, myHead, enemyLength, myLengt
 
         for directions, (dx, dy) in directions.items():
             if possibleMoves[directions] == "true":
-                if (myHead["x"] + dx, myHead["y"] + dy) in dangerous_positions and myLength > enemyLength[head]:
-                    possibleMoves[directions] = "kill"
+                if (myHead["x"] + dx, myHead["y"] + dy) in dangerous_positions:
+                    if myLength > enemyLength[head]:
+                        possibleMoves[directions] = "kill"
+                    else:
+                        possibleMoves[directions] = "maybe"
                 else:
-                    possibleMoves[directions] = "maybe"
-
+                    possibleMoves[directions] = "true"
     print("after checking future 1 step collision")
     print(possibleMoves)
 
