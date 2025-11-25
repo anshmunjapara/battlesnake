@@ -64,7 +64,7 @@ def checkBodyCollisions(possibleMoves, allBodiesCoords, myHead):
     print(possibleMoves)
 
 
-def checkFutureCollision(possibleMoves, enemyHeads, myHead, enemyLength, myLength):
+def checkOneStepFutureCollision(possibleMoves, enemyHeads, myHead, enemyLength, myLength):
     directions = {
         "up": (0, 1),
         "down": (0, -1),
@@ -134,7 +134,7 @@ def move(gameState: typing.Dict) -> typing.Dict:
 
     checkWallCollision(possibleMoves, myHead, boardWidth, boardHeight)
     checkBodyCollisions(possibleMoves, enemyCoords, myHead)
-    checkFutureCollision(possibleMoves, enemyHeads, myHead, enemyLength, myLength)
+    checkOneStepFutureCollision(possibleMoves, enemyHeads, myHead, enemyLength, myLength)
     # return a move
     safeMoves = []
     maybeSafeMoves = []
