@@ -278,6 +278,7 @@ def move(gameState: typing.Dict) -> typing.Dict:
     elif maybeSafeMoves:
         nextMove = random.choice(maybeSafeMoves)
 
+    print(f"Final possible moves: {possibleMoves}")
     print(f"MOVE {gameState['turn']}: {nextMove}")
 
     return returnMove(nextMove)
