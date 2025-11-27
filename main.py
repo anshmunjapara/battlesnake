@@ -214,6 +214,9 @@ def checkEnclosedSpace(possibleMoves, myHead, enemyHeads, enemyCoords, myLength)
         if emptyTiles < myLength * 2:
             possibleMoves["right"] = "maybe"
 
+    print("after checking enclosed space")
+    print(possibleMoves)
+
 
 def move(gameState: typing.Dict) -> typing.Dict:
     boardGrid = []
