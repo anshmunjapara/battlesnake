@@ -110,109 +110,38 @@ def checkEnclosedSpace(possibleMoves, myHead, enemyHeads, enemyCoords, myLength)
             newEnemyHead = (head[0] + dx, head[1] + dy)
             futureEnemyHeads.add(newEnemyHead)
 
-    if possibleMoves["up"] != "false":
-        myNewHead = (myHead["x"], myHead["y"] + 1)
-        visited = set()
-        queue = deque()
-        emptyTiles = 0
-        queue.append(myNewHead)
+    for moveDir, isSafe in possibleMoves.items():
+        if isSafe == "true":  # Only check moves we currently think are safe
 
-        while queue:
-            tile = queue.popleft()
-            if tile in visited:
-                continue
+            # Get the starting point for this move
+            x, y = directions[moveDir]
+            start_x, start_y = myHead["x"] + x, myHead["y"] + y
 
-            for dir, (dx, dy) in directions.items():
-                newNeighbor = (tile[0] + dx, tile[1] + dy)
-                if 11 > newNeighbor[0] >= 0 and 11 > newNeighbor[1] >= 0:
-                    if newNeighbor not in enemyCoords and newNeighbor not in futureEnemyHeads:
-                        queue.append(newNeighbor)
-                        visited.add(newNeighbor)
-                        emptyTiles += 1
+            myNewHead = (start_x, start_y)
+            visited = set()
+            queue = deque()
+            emptyTiles = 0
+            queue.append(myNewHead)
+            visited.add(myNewHead)
 
-            if emptyTiles >= myLength * 2:
-                break
+            while queue:
+                tile = queue.popleft()
+                emptyTiles += 1
 
-        if emptyTiles < myLength * 2:
-            possibleMoves["up"] = "maybe"
+                if emptyTiles > myLength * 2:
+                    break
 
-    if possibleMoves["down"] != "false":
-        myNewHead = (myHead["x"], myHead["y"] - 1)
-        visited = set()
-        queue = deque()
-        emptyTiles = 0
-        queue.append(myNewHead)
+                for dir, (dx, dy) in directions.items():
+                    newNeighbor = (tile[0] + dx, tile[1] + dy)
+                    if newNeighbor not in visited:
+                        if 11 > newNeighbor[0] >= 0 and 11 > newNeighbor[1] >= 0:
+                            if newNeighbor not in visited and newNeighbor not in enemyCoords and newNeighbor not in futureEnemyHeads:
+                                queue.append(newNeighbor)
+                                visited.add(newNeighbor)
 
-        while queue:
-            tile = queue.popleft()
-            if tile in visited:
-                continue
-
-            for dir, (dx, dy) in directions.items():
-                newNeighbor = (tile[0] + dx, tile[1] + dy)
-                if 11 > newNeighbor[0] >= 0 and 11 > newNeighbor[1] >= 0:
-                    if newNeighbor not in enemyCoords and newNeighbor not in futureEnemyHeads:
-                        queue.append(newNeighbor)
-                        visited.add(newNeighbor)
-                        emptyTiles += 1
-
-            if emptyTiles >= myLength * 2:
-                break
-
-        if emptyTiles < myLength * 2:
-            possibleMoves["down"] = "maybe"
-
-    if possibleMoves["left"] != "false":
-        myNewHead = (myHead["x"] - 1, myHead["y"])
-        visited = set()
-        queue = deque()
-        emptyTiles = 0
-        queue.append(myNewHead)
-
-        while queue:
-            tile = queue.popleft()
-            if tile in visited:
-                continue
-
-            for dir, (dx, dy) in directions.items():
-                newNeighbor = (tile[0] + dx, tile[1] + dy)
-                if 11 > newNeighbor[0] >= 0 and 11 > newNeighbor[1] >= 0:
-                    if newNeighbor not in enemyCoords and newNeighbor not in futureEnemyHeads:
-                        queue.append(newNeighbor)
-                        visited.add(newNeighbor)
-                        emptyTiles += 1
-
-            if emptyTiles >= myLength * 2:
-                break
-
-        if emptyTiles < myLength * 2:
-            possibleMoves["left"] = "maybe"
-
-    if possibleMoves["right"] != "false":
-        myNewHead = (myHead["x"] + 1, myHead["y"])
-        visited = set()
-        queue = deque()
-        emptyTiles = 0
-        queue.append(myNewHead)
-
-        while queue:
-            tile = queue.popleft()
-            if tile in visited:
-                continue
-
-            for dir, (dx, dy) in directions.items():
-                newNeighbor = (tile[0] + dx, tile[1] + dy)
-                if 11 > newNeighbor[0] >= 0 and 11 > newNeighbor[1] >= 0:
-                    if newNeighbor not in enemyCoords and newNeighbor not in futureEnemyHeads:
-                        queue.append(newNeighbor)
-                        visited.add(newNeighbor)
-                        emptyTiles += 1
-
-            if emptyTiles >= myLength * 2:
-                break
-
-        if emptyTiles < myLength * 2:
-            possibleMoves["right"] = "maybe"
+            if emptyTiles < myLength:
+                possibleMoves["up"] = "maybe"
+                print(f"Warning: {moveDir} leads to small space ({emptyTiles} tiles)")
 
     print("after checking enclosed space")
     print(possibleMoves)
