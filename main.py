@@ -111,7 +111,7 @@ def checkEnclosedSpace(possibleMoves, myHead, enemyHeads, enemyCoords, myLength)
             futureEnemyHeads.add(newEnemyHead)
 
     for moveDir, isSafe in possibleMoves.items():
-        if isSafe == "true":  # Only check moves we currently think are safe
+        if isSafe != "false":  # Only check moves we currently think are safe
 
             # Get the starting point for this move
             x, y = directions[moveDir]
