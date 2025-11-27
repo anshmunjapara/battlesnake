@@ -140,7 +140,7 @@ def checkEnclosedSpace(possibleMoves, myHead, enemyHeads, enemyCoords, myLength)
                                 visited.add(newNeighbor)
 
             if emptyTiles < myLength:
-                possibleMoves["up"] = "maybe"
+                possibleMoves[moveDir] = "maybe"
                 print(f"Warning: {moveDir} leads to small space ({emptyTiles} tiles)")
 
     print("after checking enclosed space")
