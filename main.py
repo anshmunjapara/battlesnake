@@ -133,18 +133,65 @@ def checkEnclosedSpace(possibleMoves, myHead, enemyHeads, enemyCoords, myLength)
 
                 for dir, (dx, dy) in directions.items():
                     newNeighbor = (tile[0] + dx, tile[1] + dy)
-                    if newNeighbor not in visited:
-                        if 11 > newNeighbor[0] >= 0 and 11 > newNeighbor[1] >= 0:
-                            if newNeighbor not in visited and newNeighbor not in enemyCoords and newNeighbor not in futureEnemyHeads:
-                                queue.append(newNeighbor)
-                                visited.add(newNeighbor)
 
-            if emptyTiles < myLength:
+                    if 11 > newNeighbor[0] >= 0 and 11 > newNeighbor[1] >= 0:
+                        if newNeighbor not in visited and newNeighbor not in enemyCoords and newNeighbor not in futureEnemyHeads:
+                            queue.append(newNeighbor)
+                            visited.add(newNeighbor)
+
+            if emptyTiles < myLength * 2:
                 possibleMoves[moveDir] = "maybe"
                 print(f"Warning: {moveDir} leads to small space ({emptyTiles} tiles)")
 
     print("after checking enclosed space")
     print(possibleMoves)
+
+
+from collections import deque
+
+
+def findNearestFood(possibleMoves, myHead, enemyCoords, foodSet):
+    directions = {
+        "up": (0, 1),
+        "down": (0, -1),
+        "left": (-1, 0),
+        "right": (1, 0)
+    }
+
+    visited = set()
+    q = deque()
+
+    # 1. Initialize Queue with the FIRST MOVE included
+    for moveDir, (dx, dy) in directions.items():
+        if possibleMoves[moveDir] == "true":  # Ensure this matches your logic (boolean vs string)
+            newHead = (myHead["x"] + dx, myHead["y"] + dy)
+
+            # Check safety of the first move immediately
+            if newHead not in enemyCoords:
+                visited.add(newHead)
+                # Store tuple: (coordinate, original_direction_name)
+                q.append((newHead, moveDir))
+
+                # 2. Run BFS
+    while q:
+        tile, first_move = q.popleft()  # Unpack the tuple
+
+        # If we found food, return the direction that started this path
+        if tile in foodSet:
+            return first_move
+
+        # Check neighbors
+        for _, (dx, dy) in directions.items():
+            newNeighbor = (tile[0] + dx, tile[1] + dy)
+
+            # Bounds check (0 to 10)
+            if 0 <= newNeighbor[0] < 11 and 0 <= newNeighbor[1] < 11:
+                if newNeighbor not in visited and newNeighbor not in enemyCoords:
+                    visited.add(newNeighbor)
+                    # Pass the 'first_move' along to the neighbor
+                    q.append((newNeighbor, first_move))
+
+    return None  # No path to food found
 
 
 def move(gameState: typing.Dict) -> typing.Dict:
@@ -157,12 +204,13 @@ def move(gameState: typing.Dict) -> typing.Dict:
     myHead = gameState["you"]["body"][0]
     myNeck = gameState["you"]["body"][1]
     myBody = gameState["you"]["body"]
+    food = gameState["board"]["food"]
     myLength = gameState["you"]["length"]
     opponents = gameState["board"]["snakes"]
     enemyCoords = set()
     enemyHeads = []
     enemyLength = {}
-
+    foodSet = {(f['x'], f['y']) for f in food}
     boardWidth = gameState['board']['width']
     boardHeight = gameState['board']['height']
 
@@ -189,7 +237,7 @@ def move(gameState: typing.Dict) -> typing.Dict:
     checkWallCollision(possibleMoves, myHead, boardWidth, boardHeight)
     checkBodyCollisions(possibleMoves, enemyCoords, myHead)
     checkOneStepFutureCollision(possibleMoves, enemyHeads, myHead, enemyLength, myLength)
-    checkEnclosedSpace(possibleMoves,myHead,enemyHeads,enemyCoords,myLength)
+    checkEnclosedSpace(possibleMoves, myHead, enemyHeads, enemyCoords, myLength)
 
     safeMoves = []
     maybeSafeMoves = []
@@ -206,7 +254,9 @@ def move(gameState: typing.Dict) -> typing.Dict:
     if killerMoves:
         nextMove = random.choice(killerMoves)
     elif safeMoves:
-        nextMove = random.choice(safeMoves)
+        nextMove = findNearestFood(possibleMoves, myHead, enemyCoords, foodSet)
+        if not nextMove:
+            nextMove = random.choice(killerMoves)
     elif maybeSafeMoves:
         nextMove = random.choice(maybeSafeMoves)
 
