@@ -256,7 +256,7 @@ def move(gameState: typing.Dict) -> typing.Dict:
     elif safeMoves:
         nextMove = findNearestFood(possibleMoves, myHead, enemyCoords, foodSet)
         if not nextMove:
-            nextMove = random.choice(killerMoves)
+            nextMove = random.choice(safeMoves)
     elif maybeSafeMoves:
         nextMove = random.choice(maybeSafeMoves)
 
