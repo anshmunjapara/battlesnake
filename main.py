@@ -96,7 +96,7 @@ def checkOneStepFutureCollision(possibleMoves, enemyHeads, myHead, enemyLength, 
     print(possibleMoves)
 
 
-def checkEnclosedSpace(possibleMoves, myHead, enemyHeads, enemyCoords, myLength):
+def checkEnclosedSpace(possibleMoves, myHead, enemyHeads, enemyCoords, myLength, boardWidth, boardHeight):
     futureEnemyHeads = set()
 
     directions = {
@@ -136,7 +136,7 @@ def checkEnclosedSpace(possibleMoves, myHead, enemyHeads, enemyCoords, myLength)
                 for dir, (dx, dy) in directions.items():
                     newNeighbor = (tile[0] + dx, tile[1] + dy)
 
-                    if 11 > newNeighbor[0] >= 0 and 11 > newNeighbor[1] >= 0:
+                    if boardWidth > newNeighbor[0] >= 0 and boardHeight > newNeighbor[1] >= 0:
                         if newNeighbor not in visited and newNeighbor not in enemyCoords and newNeighbor not in futureEnemyHeads:
                             queue.append(newNeighbor)
                             visited.add(newNeighbor)
@@ -165,9 +165,7 @@ def checkEnclosedSpace(possibleMoves, myHead, enemyHeads, enemyCoords, myLength)
     print(possibleMoves)
 
 
-
-
-def findNearestFood(possibleMoves, myHead, enemyCoords, foodSet):
+def findNearestFood(possibleMoves, myHead, enemyCoords, foodSet, boardWidth, boardHeight):
     directions = {
         "up": (0, 1),
         "down": (0, -1),
@@ -202,7 +200,7 @@ def findNearestFood(possibleMoves, myHead, enemyCoords, foodSet):
             newNeighbor = (tile[0] + dx, tile[1] + dy)
 
             # Bounds check (0 to 10)
-            if 0 <= newNeighbor[0] < 11 and 0 <= newNeighbor[1] < 11:
+            if 0 <= newNeighbor[0] < boardWidth and 0 <= newNeighbor[1] < boardHeight:
                 if newNeighbor not in visited and newNeighbor not in enemyCoords:
                     visited.add(newNeighbor)
                     # Pass the 'first_move' along to the neighbor
@@ -212,15 +210,11 @@ def findNearestFood(possibleMoves, myHead, enemyCoords, foodSet):
 
 
 def move(gameState: typing.Dict) -> typing.Dict:
-    boardGrid = []
-    for i in range(0, 11):
-        boardGrid.append([0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0])
-
     possibleMoves = {"up": "true", "down": "true", "left": "true", "right": "true"}
 
     myHead = gameState["you"]["body"][0]
     myNeck = gameState["you"]["body"][1]
-    myBody = gameState["you"]["body"]
+    # myBody = gameState["you"]["body"]
     food = gameState["board"]["food"]
     myLength = gameState["you"]["length"]
     opponents = gameState["board"]["snakes"]
@@ -254,7 +248,7 @@ def move(gameState: typing.Dict) -> typing.Dict:
     checkWallCollision(possibleMoves, myHead, boardWidth, boardHeight)
     checkBodyCollisions(possibleMoves, enemyCoords, myHead)
     checkOneStepFutureCollision(possibleMoves, enemyHeads, myHead, enemyLength, myLength)
-    checkEnclosedSpace(possibleMoves, myHead, enemyHeads, enemyCoords, myLength)
+    checkEnclosedSpace(possibleMoves, myHead, enemyHeads, enemyCoords, myLength, boardWidth, boardHeight)
 
     safeMoves = []
     maybeSafeMoves = []
@@ -271,7 +265,7 @@ def move(gameState: typing.Dict) -> typing.Dict:
     if killerMoves:
         nextMove = random.choice(killerMoves)
     elif safeMoves:
-        nextMove = findNearestFood(possibleMoves, myHead, enemyCoords, foodSet)
+        nextMove = findNearestFood(possibleMoves, myHead, enemyCoords, foodSet, boardWidth, boardHeight)
         if not nextMove:
             nextMove = random.choice(safeMoves)
     elif maybeSafeMoves:
