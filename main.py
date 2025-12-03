@@ -2,6 +2,7 @@ import random
 import typing
 import logging
 from collections import deque
+from collections import deque
 
 import git
 from flask import Flask
@@ -104,6 +105,7 @@ def checkEnclosedSpace(possibleMoves, myHead, enemyHeads, enemyCoords, myLength)
         "left": (-1, 0),
         "right": (1, 0)
     }
+    spaceScores = {}
 
     for head in enemyHeads:
         for direction, (dx, dy) in directions.items():
@@ -139,15 +141,30 @@ def checkEnclosedSpace(possibleMoves, myHead, enemyHeads, enemyCoords, myLength)
                             queue.append(newNeighbor)
                             visited.add(newNeighbor)
 
+            spaceScores[moveDir] = emptyTiles
+
             if emptyTiles < myLength * 2:
                 possibleMoves[moveDir] = "maybe"
                 print(f"Warning: {moveDir} leads to small space ({emptyTiles} tiles)")
+
+    hasSafeMove = any(status == "true" for status in possibleMoves.values())
+    if not hasSafeMove and spaceScores:
+        print("All moves lead to small spaces. Picking the largest one...")
+
+        # Find the move with the highest emptyTiles count
+        best_move = max(spaceScores, key=spaceScores.get)
+        max_space = spaceScores[best_move]
+
+        for moveDir in spaceScores:
+            if moveDir != best_move:
+                possibleMoves[moveDir] = "false"
+
+        print(f"Rescued move: {best_move} with {max_space} space.")
 
     print("after checking enclosed space")
     print(possibleMoves)
 
 
-from collections import deque
 
 
 def findNearestFood(possibleMoves, myHead, enemyCoords, foodSet):
